@@ -1,0 +1,57 @@
+import base64
+import json
+ENCODING = 'utf-8'
+
+def imgtoString(path):
+    with open(path, "rb") as imageFile:
+        str = base64.b64encode(imageFile.read())
+        return str
+
+def StringtoImg(str,imageName):
+    fh = open(imageName+".tif", "wb")
+    fh.write(base64.b64decode(str))
+    fh.close()
+
+def getUser(jdata):
+    json_data = json.dumps(jdata)
+    wjdata = json.loads(json_data)
+    res= wjdata['user']
+    return res
+
+def getFingerCode(jdata,finger):
+    json_data = json.dumps(jdata)
+    wjdata = json.loads(json_data)
+    res = wjdata['fingers'][finger]['code']
+    return res
+
+def getFingerImage(jdata,finger):
+    json_data = json.dumps(jdata)
+    wjdata = json.loads(json_data)
+    res = wjdata['fingers'][finger]['img']
+    return res
+
+p=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\Simple_FingerPrint_Matching\FVC2002\DB1_B\101_1.tif"
+
+StringImg=imgtoString(p)
+
+#StringtoImg(StringImg,"101_1")
+code=5
+StringImg2=StringImg.decode(ENCODING)
+
+#StringtoImg(StringImg2,"101_1")
+data = {"user": 1, "fingers":
+    [
+        {"first": 1, "img": StringImg2,"code": 2},
+        {"second": 2, "img": StringImg2,"code": code},
+        {"third": 3, "img": StringImg2,"code": code},
+        {"forth": 4, "img": StringImg2,"code": code}
+
+    ]}
+
+#json_data = json.dumps(data)
+
+#wjdata = json.loads(json_data)
+
+
+print(getFingerImage(data,2))
+
