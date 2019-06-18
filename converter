@@ -1,30 +1,41 @@
-import base64
-import json
-ENCODING = 'utf-8'
+import base64 #for encoding and decoding of image
+import json # for parsing of Json data
+import matlab.engine #API to call functions in matlab
+ENCODING = 'utf-8' #used to decode stringed image in python 3
 
-def imgtoString(path):
+
+eng = matlab.engine.start_matlab() #eng is the object returned from matlab
+
+eng.addpath(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab',nargout=0)
+#eng.cd(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab')
+eng.main_total.m
+
+#tf = eng.isprime(37)#example of a function call to matlab
+#print(tf)
+
+def imgtoString(path): #get image from any location and returns string representation of image
     with open(path, "rb") as imageFile:
         str = base64.b64encode(imageFile.read())
         return str
 
-def StringtoImg(str,imageName):
+def StringtoImg(str,imageName): #collects string from source and converts into an image
     fh = open(imageName+".tif", "wb")
     fh.write(base64.b64decode(str))
     fh.close()
 
-def getUser(jdata):
+def getUser(jdata): #navigate the json string to extract user
     json_data = json.dumps(jdata)
     wjdata = json.loads(json_data)
     res= wjdata['user']
     return res
 
-def getFingerCode(jdata,finger):
+def getFingerCode(jdata,finger): #navigates the json string to extract pin/code
     json_data = json.dumps(jdata)
     wjdata = json.loads(json_data)
     res = wjdata['fingers'][finger]['code']
     return res
 
-def getFingerImage(jdata,finger):
+def getFingerImage(jdata,finger):# navigate json string to extract finger image for a particular finger
     json_data = json.dumps(jdata)
     wjdata = json.loads(json_data)
     res = wjdata['fingers'][finger]['img']
@@ -47,11 +58,10 @@ data = {"user": 1, "fingers":
         {"forth": 4, "img": StringImg2,"code": code}
 
     ]}
-
-#json_data = json.dumps(data)
+json_data = json.dumps(data)
 
 #wjdata = json.loads(json_data)
 
 
-print(getFingerImage(data,2))
+print(json_data)
 
