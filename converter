@@ -1,17 +1,32 @@
 import base64 #for encoding and decoding of image
 import json # for parsing of Json data
 import matlab.engine #API to call functions in matlab
+import zlib
+
 ENCODING = 'utf-8' #used to decode stringed image in python 3
 
+#eng = matlab.engine.start_matlab() #eng is the object returned from matlab
+#eng.addpath(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab')
 
-eng = matlab.engine.start_matlab() #eng is the object returned from matlab
+#ret = eng.main_total(nargout=0)
+#print(ret)
 
-eng.addpath(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab',nargout=0)
+
 #eng.cd(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab')
-eng.main_total.m
+#eng.main_total.m
 
 #tf = eng.isprime(37)#example of a function call to matlab
 #print(tf)
+
+def compress(uncompressed_text):
+    bin_text=uncompressed_text.encode("ASCII")
+    comp=zlib.compress(bin_text,9)
+
+    return comp
+
+def decompress(compressed_text):
+
+    return zlib.decompress(compressed_text)
 
 def imgtoString(path): #get image from any location and returns string representation of image
     with open(path, "rb") as imageFile:
@@ -49,6 +64,8 @@ StringImg=imgtoString(p)
 code=5
 StringImg2=StringImg.decode(ENCODING)
 
+StringImg2=str(compress(StringImg2))
+
 #StringtoImg(StringImg2,"101_1")
 data = {"user": 1, "fingers":
     [
@@ -60,8 +77,16 @@ data = {"user": 1, "fingers":
     ]}
 json_data = json.dumps(data)
 
-#wjdata = json.loads(json_data)
+wjdata = json.loads(json_data)
 
 
-print(json_data)
+
+
+#image=getFingerImage(wjdata,1)
+image=getFingerImage(wjdata,1).replace("b'","").replace("'","").replace("\\","/")
+image=bytes(image,"utf-8")
+image =decompress(enc)#stopped working
+
+StringtoImg(image,"101_1")
+#print(image)
 
