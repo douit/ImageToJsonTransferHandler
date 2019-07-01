@@ -1,14 +1,16 @@
 import base64 #for encoding and decoding of image
 import json # for parsing of Json data
 import matlab.engine #API to call functions in matlab
-import zlib
 
-ENCODING = 'utf-8' #used to decode stringed image in python 3
+from codecs import encode
 
-#eng = matlab.engine.start_matlab() #eng is the object returned from matlab
-#eng.addpath(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab')
+ENCODING = 'UTF-8' #used to decode stringed image in python 3
 
-#ret = eng.main_total(nargout=0)
+eng = matlab.engine.start_matlab() #eng is the object returned from matlab
+eng.addpath(r'C:\Users\Toozigba\Documents\MasterCompSci\Project\converter')
+#filePath='101_1.tif'
+
+
 #print(ret)
 
 
@@ -18,15 +20,7 @@ ENCODING = 'utf-8' #used to decode stringed image in python 3
 #tf = eng.isprime(37)#example of a function call to matlab
 #print(tf)
 
-def compress(uncompressed_text):
-    bin_text=uncompressed_text.encode("ASCII")
-    comp=zlib.compress(bin_text,9)
 
-    return comp
-
-def decompress(compressed_text):
-
-    return zlib.decompress(compressed_text)
 
 def imgtoString(path): #get image from any location and returns string representation of image
     with open(path, "rb") as imageFile:
@@ -34,9 +28,11 @@ def imgtoString(path): #get image from any location and returns string represent
         return str
 
 def StringtoImg(str,imageName): #collects string from source and converts into an image
-    fh = open(imageName+".tif", "wb")
+    path="img/"+imageName+".tif"
+    fh = open("img/"+imageName+".tif", "wb")
     fh.write(base64.b64decode(str))
     fh.close()
+    return path
 
 def getUser(jdata): #navigate the json string to extract user
     json_data = json.dumps(jdata)
@@ -56,37 +52,46 @@ def getFingerImage(jdata,finger):# navigate json string to extract finger image 
     res = wjdata['fingers'][finger]['img']
     return res
 
-p=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\Simple_FingerPrint_Matching\FVC2002\DB1_B\101_1.tif"
+finger1=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab\FVC2002\Billy_en\101_1.tif"
+finger2=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab\FVC2002\Billy_en\102_1.tif"
+finger3=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab\FVC2002\Billy_en\103_1.tif"
+finger4=r"C:\Users\Toozigba\Documents\MasterCompSci\Project\converter\mlab\FVC2002\Billy_en\104_1.tif"
 
-StringImg=imgtoString(p)
+StringFinger1=imgtoString(finger1)
+StringFinger2=imgtoString(finger2)
+StringFinger3=imgtoString(finger3)
+StringFinger4=imgtoString(finger4)
 
 #StringtoImg(StringImg,"101_1")
-code=5
-StringImg2=StringImg.decode(ENCODING)
+code1=5
+code2=1
+code3=9
+code4=3
 
-StringImg2=str(compress(StringImg2))
+StringFinger1=str(StringFinger1.decode(ENCODING))
+StringFinger2=str(StringFinger2.decode(ENCODING))
+StringFinger3=str(StringFinger3.decode(ENCODING))
+StringFinger4=str(StringFinger4.decode(ENCODING))
+
+
 
 #StringtoImg(StringImg2,"101_1")
-data = {"user": 1, "fingers":
+data = {"user": "Billy Doe","Acc":1, "fingers":
     [
-        {"first": 1, "img": StringImg2,"code": 2},
-        {"second": 2, "img": StringImg2,"code": code},
-        {"third": 3, "img": StringImg2,"code": code},
-        {"forth": 4, "img": StringImg2,"code": code}
+        {"first": 1, "img": StringFinger1,"code": code1},
+        {"second": 2, "img": StringFinger2,"code": code2},
+        {"third": 3, "img": StringFinger3,"code": code3},
+        {"forth": 4, "img": StringFinger4,"code": code4}
 
     ]}
 json_data = json.dumps(data)
 
 wjdata = json.loads(json_data)
+image=getFingerImage(wjdata,0)
+image=bytes(image,"UTF-8")
+
+ret = eng.fingermatch(StringtoImg(image,"101_1"))
 
 
-
-
-#image=getFingerImage(wjdata,1)
-image=getFingerImage(wjdata,1).replace("b'","").replace("'","").replace("\\","/")
-image=bytes(image,"utf-8")
-image =decompress(enc)#stopped working
-
-StringtoImg(image,"101_1")
-#print(image)
+print(image)
 
