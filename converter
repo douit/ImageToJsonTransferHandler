@@ -87,11 +87,20 @@ data = {"user": "Billy Doe","Acc":1, "fingers":
 json_data = json.dumps(data)
 
 wjdata = json.loads(json_data)
-image=getFingerImage(wjdata,0)
-image=bytes(image,"UTF-8")
+image1=getFingerImage(wjdata,0)
+image1=bytes(image1,"UTF-8")
 
-ret = eng.fingermatch(StringtoImg(image,"101_1"))
+image2=getFingerImage(wjdata,1)
+image2=bytes(image2,"UTF-8")
+
+image3=getFingerImage(wjdata,2)
+image3=bytes(image3,"UTF-8")
+
+image4=getFingerImage(wjdata,3)
+image4=bytes(image4,"UTF-8")
+
+ret = eng.fingermatch(StringtoImg(image1,"101_1"),StringtoImg(image2,"102_1"),StringtoImg(image3,"103_1"),StringtoImg(image4,"104_1"),"001")
 
 
-print(image)
+print(ret)
 
